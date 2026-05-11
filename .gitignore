@@ -56,3 +56,6 @@ opentelemetry-javaagent.jar
 
 # Claude Code
 CLAUDE.md
+
+# SQL (Supabase şemaları repoya eklenmez)
+*.sql
