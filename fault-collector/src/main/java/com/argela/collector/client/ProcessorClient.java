@@ -4,6 +4,9 @@ import com.argela.collector.model.AlarmRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Component
 public class ProcessorClient {
@@ -19,6 +22,9 @@ public class ProcessorClient {
                 .uri("/api/v1/process")
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(5))
+                .retryWhen(Retry.backoff(3, Duration.ofMillis(500)))
+                .onErrorResume(ex -> Mono.just("{\"alarmId\":\"" + request.getAlarmId() + "\",\"status\":\"FALLBACK\"}"));
     }
 }
