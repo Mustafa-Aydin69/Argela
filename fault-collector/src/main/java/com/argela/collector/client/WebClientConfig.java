@@ -1,0 +1,20 @@
+package com.argela.collector.client;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
+
+@Configuration
+public class WebClientConfig {
+
+    @Value("${processor.base-url}")
+    private String processorBaseUrl;
+
+    @Bean
+    public WebClient processorWebClient() {
+        return WebClient.builder()
+                .baseUrl(processorBaseUrl)
+                .build();
+    }
+}
