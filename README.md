@@ -1,7 +1,7 @@
 # Argela OpenTelemetry Demo
 
-OpenTelemetry'nin gerçek dünya telekomünikasyon senaryosunda nasıl kullanıldığını gösteren demo projesi.  
-Argela Technologies staj projesi kapsamında geliştirilmiştir.
+OpenTelemetry'nin gerçek dünya senaryosunda nasıl kullanıldığını anlamak için geliştirdiğim demo projedir.  
+Argela Technologies staj kapsamında geliştirilmiştir.
 
 ## Senaryo
 
