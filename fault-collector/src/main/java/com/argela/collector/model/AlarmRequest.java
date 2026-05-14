@@ -1,13 +1,24 @@
 package com.argela.collector.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class AlarmRequest {
 
+    @NotBlank
     private String alarmId;
+
+    @NotBlank
     private String sourceIp;
+
+    @NotNull
     private AlarmType alarmType;
+
+    @NotBlank
     private String description;
+
+    @NotNull
     private LocalDateTime timestamp;
 
     public AlarmRequest() {}
