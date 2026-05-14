@@ -6,13 +6,13 @@ public class AlarmRequest {
 
     private String alarmId;
     private String sourceIp;
-    private String alarmType;
+    private AlarmType alarmType;
     private String description;
     private LocalDateTime timestamp;
 
     public AlarmRequest() {}
 
-    public AlarmRequest(String alarmId, String sourceIp, String alarmType,
+    public AlarmRequest(String alarmId, String sourceIp, AlarmType alarmType,
                         String description, LocalDateTime timestamp) {
         this.alarmId = alarmId;
         this.sourceIp = sourceIp;
@@ -27,8 +27,8 @@ public class AlarmRequest {
     public String getSourceIp() { return sourceIp; }
     public void setSourceIp(String sourceIp) { this.sourceIp = sourceIp; }
 
-    public String getAlarmType() { return alarmType; }
-    public void setAlarmType(String alarmType) { this.alarmType = alarmType; }
+    public AlarmType getAlarmType() { return alarmType; }
+    public void setAlarmType(AlarmType alarmType) { this.alarmType = alarmType; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
