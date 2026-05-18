@@ -10,6 +10,7 @@ import com.argela.processor.service.severity.SeverityService;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.DoubleHistogram;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
@@ -29,6 +30,7 @@ public class AlarmProcessorService {
     private final SeverityService severityService;
     private final Tracer tracer;
     private final LongCounter processedCounter;
+    private final DoubleHistogram processingDurationHistogram;
 
     public AlarmProcessorService(AlarmRepository repository, SeverityService severityService) {
         this.repository = repository;
@@ -39,6 +41,10 @@ public class AlarmProcessorService {
                 .setDescription("Total number of alarms successfully processed")
                 .setUnit("{alarm}")
                 .build();
+        this.processingDurationHistogram = meter.histogramBuilder("alarm.processing.duration")
+                .setDescription("Time taken to process an alarm end-to-end")
+                .setUnit("ms")
+                .build();
     }
 
     @Transactional
@@ -47,6 +53,7 @@ public class AlarmProcessorService {
                 .setSpanKind(SpanKind.INTERNAL)
                 .startSpan();
 
+        long startNano = System.nanoTime();
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("alarm.id", request.getAlarmId());
             span.setAttribute("alarm.type", request.getAlarmType().name());
@@ -68,8 +75,12 @@ public class AlarmProcessorService {
             alarm.setProcessedAt(LocalDateTime.now());
 
             Alarm saved = repository.save(alarm); // DB span'ları da alarm.process'in child'ı olur
+            double elapsedMs = (System.nanoTime() - startNano) / 1_000_000.0;
             processedCounter.add(1, Attributes.of(
                     AttributeKey.stringKey("severity.level"), severity.name()
+            ));
+            processingDurationHistogram.record(elapsedMs, Attributes.of(
+                    AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
             return new ProcessResponse(saved.getAlarmId(), saved.getStatus(), saved.getSeverityLevel());
         } catch (Exception e) {
