@@ -8,6 +8,10 @@ import com.argela.processor.model.SeverityLevel;
 import com.argela.processor.repository.AlarmRepository;
 import com.argela.processor.service.severity.SeverityService;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
@@ -24,11 +28,17 @@ public class AlarmProcessorService {
     private final AlarmRepository repository;
     private final SeverityService severityService;
     private final Tracer tracer;
+    private final LongCounter processedCounter;
 
     public AlarmProcessorService(AlarmRepository repository, SeverityService severityService) {
         this.repository = repository;
         this.severityService = severityService;
         this.tracer = GlobalOpenTelemetry.getTracer("fault-processor");
+        Meter meter = GlobalOpenTelemetry.getMeter("fault-processor");
+        this.processedCounter = meter.counterBuilder("alarms.processed.total")
+                .setDescription("Total number of alarms successfully processed")
+                .setUnit("{alarm}")
+                .build();
     }
 
     @Transactional
@@ -58,6 +68,9 @@ public class AlarmProcessorService {
             alarm.setProcessedAt(LocalDateTime.now());
 
             Alarm saved = repository.save(alarm); // DB span'ları da alarm.process'in child'ı olur
+            processedCounter.add(1, Attributes.of(
+                    AttributeKey.stringKey("severity.level"), severity.name()
+            ));
             return new ProcessResponse(saved.getAlarmId(), saved.getStatus(), saved.getSeverityLevel());
         } catch (Exception e) {
             span.setStatus(StatusCode.ERROR, e.getMessage());
