@@ -3,6 +3,10 @@ package com.argela.collector.service;
 import com.argela.collector.client.ProcessorClient;
 import com.argela.collector.model.AlarmRequest;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
@@ -22,10 +26,16 @@ public class AlarmService {
 
     private final ProcessorClient processorClient;
     private final Tracer tracer;
+    private final LongCounter receivedCounter;
 
     public AlarmService(ProcessorClient processorClient) {
         this.processorClient = processorClient;
         this.tracer = GlobalOpenTelemetry.getTracer("fault-collector");
+        Meter meter = GlobalOpenTelemetry.getMeter("fault-collector");
+        this.receivedCounter = meter.counterBuilder("alarms.received.total")
+                .setDescription("Total number of alarms received")
+                .setUnit("{alarm}")
+                .build();
     }
 
     public Mono<String> validateAndForward(AlarmRequest request) {
@@ -39,6 +49,10 @@ public class AlarmService {
             span.setAttribute("alarm.source_ip", request.getSourceIp());
 
             validate(request, span);
+
+            receivedCounter.add(1, Attributes.of(
+                    AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
+            ));
 
             return processorClient.forwardAlarm(request)
                     .doFinally(signal -> span.end());

@@ -53,7 +53,8 @@
                         -javaagent:${project.basedir}/../infrastructure/otel-agent/opentelemetry-javaagent.jar
                         -Dotel.service.name=fault-collector
                         -Dotel.traces.exporter=logging
-                        -Dotel.metrics.exporter=none
+                        -Dotel.metrics.exporter=logging
+                        -Dotel.metric.export.interval=10000
                         -Dotel.logs.exporter=none
                     </jvmArguments>
                 </configuration>
