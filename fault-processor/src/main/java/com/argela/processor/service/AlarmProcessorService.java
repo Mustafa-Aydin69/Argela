@@ -45,6 +45,13 @@ public class AlarmProcessorService {
                 .setDescription("Time taken to process an alarm end-to-end")
                 .setUnit("ms")
                 .build();
+        meter.gaugeBuilder("alarms.pending.count")
+                .ofLongs()
+                .setDescription("Number of alarms currently in PROCESSING state")
+                .setUnit("{alarm}")
+                .buildWithCallback(measurement ->
+                        measurement.record(repository.countByStatus(AlarmStatus.PROCESSING))
+                );
     }
 
     @Transactional

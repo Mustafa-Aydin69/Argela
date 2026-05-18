@@ -1,6 +1,7 @@
 package com.argela.processor.repository;
 
 import com.argela.processor.entity.Alarm;
+import com.argela.processor.model.AlarmStatus;
 import com.argela.processor.model.AlarmType;
 import com.argela.processor.model.SeverityLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,6 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     List<Alarm> findBySeverityLevel(SeverityLevel severityLevel);
 
     List<Alarm> findByStatus(String status);
+
+    long countByStatus(AlarmStatus status);
 }
