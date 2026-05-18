@@ -1,7 +1,7 @@
 package com.argela.collector.controller;
 
-import com.argela.collector.client.ProcessorClient;
 import com.argela.collector.model.AlarmRequest;
+import com.argela.collector.service.AlarmService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,15 +14,15 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/alarms")
 public class AlarmController {
 
-    private final ProcessorClient processorClient;
+    private final AlarmService alarmService;
 
-    public AlarmController(ProcessorClient processorClient) {
-        this.processorClient = processorClient;
+    public AlarmController(AlarmService alarmService) {
+        this.alarmService = alarmService;
     }
 
     @PostMapping
     public Mono<ResponseEntity<String>> receiveAlarm(@Valid @RequestBody AlarmRequest request) {
-        return processorClient.forwardAlarm(request)
+        return alarmService.validateAndForward(request)
                 .map(response -> ResponseEntity.accepted().body(response));
     }
 }
