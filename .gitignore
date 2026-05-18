@@ -60,3 +60,4 @@ CLAUDE.md
 
 # SQL
 *.sql
+!fault-processor/src/main/resources/db/migration/*.sql

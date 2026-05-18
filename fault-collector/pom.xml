@@ -43,6 +43,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>
+                        -javaagent:${project.basedir}/../infrastructure/otel-agent/opentelemetry-javaagent.jar
+                        -Dotel.service.name=fault-collector
+                        -Dotel.traces.exporter=logging
+                        -Dotel.metrics.exporter=none
+                        -Dotel.logs.exporter=none
+                    </jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
