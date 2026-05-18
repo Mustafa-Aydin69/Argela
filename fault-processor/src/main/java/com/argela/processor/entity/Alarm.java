@@ -1,5 +1,6 @@
 package com.argela.processor.entity;
 
+import com.argela.processor.model.AlarmStatus;
 import com.argela.processor.model.AlarmType;
 import com.argela.processor.model.SeverityLevel;
 import jakarta.persistence.*;
@@ -26,8 +27,9 @@ public class Alarm {
     @Enumerated(EnumType.STRING)
     private SeverityLevel severityLevel;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private AlarmStatus status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -50,8 +52,8 @@ public class Alarm {
     public SeverityLevel getSeverityLevel() { return severityLevel; }
     public void setSeverityLevel(SeverityLevel severityLevel) { this.severityLevel = severityLevel; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public AlarmStatus getStatus() { return status; }
+    public void setStatus(AlarmStatus status) { this.status = status; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
