@@ -56,6 +56,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "ms",
+          "color": { "mode": "fixed" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -65,7 +66,28 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "CONGESTION" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "HIGH_LATENCY" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "LINK_DOWN" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "NODE_UNREACHABLE" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "PACKET_LOSS" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }]
+          }
+        ]
       },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "id": 3,
@@ -73,17 +95,17 @@
         "reduceOptions": { "calcs": ["lastNotNull"] },
         "orientation": "auto",
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": false
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
           "expr": "rate(alarm_processing_duration_milliseconds_sum[5m]) / rate(alarm_processing_duration_milliseconds_count[5m])",
-          "legendFormat": "Ort. İşlem Süresi",
+          "legendFormat": "{{alarm_type}}",
           "refId": "A"
         }
       ],
-      "title": "Ortalama İşlem Süresi",
+      "title": "Alarm Tipine Göre Ortalama İşlem Süresi",
       "type": "gauge"
     },
     {
