@@ -93,6 +93,25 @@ bash alarm-simulator/simulate.sh error  # geçersiz payload senaryosu
 | fault-collector Health | http://localhost:8080/actuator/health |
 | fault-processor Health | http://localhost:8081/actuator/health |
 
+## Sunum Akışı
+
+1. **Simülatörü başlat**
+   ```bash
+   bash alarm-simulator/simulate.sh slow
+   ```
+
+2. **Jaeger'da trace izle** → `http://localhost:16686`
+   - Service: `fault-collector` → Find Traces
+   - `fault-collector → fault-processor → INSERT faultdb.alarms` zincirini aç
+
+3. **Prometheus'ta metrik sorgula** → `http://localhost:9090`
+   - `rate(alarms_received_total[5m])` — geliş hızı
+   - `alarms_processed_total` — severity dağılımı
+
+4. **Grafana dashboard'u izle** → `http://localhost:3000`
+   - Alarm geliş hızı grafiğinin canlı değişimini gözlemle
+   - Severity dağılımı pie chart'ının güncellenmesini izle
+
 ## Ekran Görüntüleri
 
 ### Jaeger — Distributed Trace
