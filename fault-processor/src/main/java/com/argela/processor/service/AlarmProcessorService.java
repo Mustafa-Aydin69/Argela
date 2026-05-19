@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class AlarmProcessorService {
@@ -104,14 +105,7 @@ public class AlarmProcessorService {
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
 
-            // INFO: alarm başarıyla işlendi
-            log.atInfo()
-                    .addKeyValue("alarm.id", saved.getAlarmId())
-                    .addKeyValue("alarm.type", saved.getAlarmType().name())
-                    .addKeyValue("severity", saved.getSeverityLevel().name())
-                    .addKeyValue("status", saved.getStatus().name())
-                    .addKeyValue("duration_ms", elapsedMs)
-                    .log("Alarm processed and persisted successfully");
+            logAlarmRecord(saved, elapsedMs);
 
             return new ProcessResponse(saved.getAlarmId(), saved.getStatus(), saved.getSeverityLevel());
         } catch (Exception e) {
@@ -127,5 +121,20 @@ public class AlarmProcessorService {
         } finally {
             span.end();
         }
+    }
+
+    private void logAlarmRecord(Alarm saved, double elapsedMs) {
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        log.atInfo()
+                .addKeyValue("alarm.db_id",        saved.getId())
+                .addKeyValue("alarm.id",            saved.getAlarmId())
+                .addKeyValue("alarm.type",          saved.getAlarmType().name())
+                .addKeyValue("alarm.source_ip",     saved.getSourceIp())
+                .addKeyValue("alarm.severity",      saved.getSeverityLevel().name())
+                .addKeyValue("alarm.status",        saved.getStatus().name())
+                .addKeyValue("alarm.created_at",    saved.getCreatedAt().format(fmt))
+                .addKeyValue("alarm.processed_at",  saved.getProcessedAt().format(fmt))
+                .addKeyValue("alarm.duration_ms",   Math.round(elapsedMs))
+                .log("Alarm record persisted");
     }
 }
