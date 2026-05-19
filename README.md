@@ -77,8 +77,10 @@ Ağ yönetim sistemlerinde oluşan alarmlar **fault-collector** servisi tarafın
 # Tüm altyapıyı ayağa kaldır
 docker-compose up --build
 
-# Alarm simülatörünü çalıştır
-./infrastructure/simulator/simulate.sh
+# Alarm simülatörünü çalıştır (3 mod)
+bash alarm-simulator/simulate.sh slow   # 1 alarm/sn
+bash alarm-simulator/simulate.sh fast   # 10 alarm/sn
+bash alarm-simulator/simulate.sh error  # geçersiz payload senaryosu
 ```
 
 ### Arayüzler
@@ -90,6 +92,18 @@ docker-compose up --build
 | Grafana | http://localhost:3000 |
 | fault-collector Health | http://localhost:8080/actuator/health |
 | fault-processor Health | http://localhost:8081/actuator/health |
+
+## Ekran Görüntüleri
+
+### Jaeger — Distributed Trace
+Simülatör çalışırken `fault-collector` → `fault-processor` → `INSERT faultdb.alarms` zinciri tek trace altında görselleşir. Her alarm için auto-instrumented (HTTP, JDBC, Hibernate) ve manual span'lar (alarm.validate, alarm.process, severity.calculate) iç içe listelenir.
+
+### Grafana — Fault Management Dashboard
+Dört panel:
+- **Alarm Geliş Hızı** — alarm tipine göre rate grafiği (timeseries)
+- **Severity Dağılımı** — CRITICAL / MEDIUM dağılımı (pie chart)
+- **Alarm Tipine Göre Ortalama İşlem Süresi** — her tip için renkli gauge
+- **Aktif Alarm Sayısı** — anlık PROCESSING durumundaki alarm sayısı (stat)
 
 ## OpenTelemetry Sinyalleri
 
