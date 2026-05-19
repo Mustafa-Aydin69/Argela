@@ -68,7 +68,7 @@
                         -Dotel.traces.exporter=logging
                         -Dotel.metrics.exporter=logging
                         -Dotel.metric.export.interval=10000
-                        -Dotel.logs.exporter=none
+                        -Dotel.logs.exporter=logging
                     </jvmArguments>
                 </configuration>
             </plugin>

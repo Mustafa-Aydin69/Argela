@@ -18,6 +18,8 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,8 @@ import java.time.LocalDateTime;
 
 @Service
 public class AlarmProcessorService {
+
+    private static final Logger log = LoggerFactory.getLogger(AlarmProcessorService.class);
 
     private final AlarmRepository repository;
     private final SeverityService severityService;
@@ -78,6 +82,16 @@ public class AlarmProcessorService {
             alarm.setSeverityLevel(severity);
             span.setAttribute("alarm.severity", severity.name());
 
+            // WARN: kritik alarm, operasyon ekibi bilgilendirilmeli
+            if (severity == SeverityLevel.CRITICAL) {
+                log.atWarn()
+                        .addKeyValue("alarm.id", request.getAlarmId())
+                        .addKeyValue("alarm.type", request.getAlarmType().name())
+                        .addKeyValue("alarm.source_ip", request.getSourceIp())
+                        .addKeyValue("severity", severity.name())
+                        .log("CRITICAL severity alarm detected — immediate attention required");
+            }
+
             alarm.setStatus(AlarmStatus.PROCESSED);
             alarm.setProcessedAt(LocalDateTime.now());
 
@@ -89,10 +103,26 @@ public class AlarmProcessorService {
             processingDurationHistogram.record(elapsedMs, Attributes.of(
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
+
+            // INFO: alarm başarıyla işlendi
+            log.atInfo()
+                    .addKeyValue("alarm.id", saved.getAlarmId())
+                    .addKeyValue("alarm.type", saved.getAlarmType().name())
+                    .addKeyValue("severity", saved.getSeverityLevel().name())
+                    .addKeyValue("status", saved.getStatus().name())
+                    .addKeyValue("duration_ms", elapsedMs)
+                    .log("Alarm processed and persisted successfully");
+
             return new ProcessResponse(saved.getAlarmId(), saved.getStatus(), saved.getSeverityLevel());
         } catch (Exception e) {
             span.setStatus(StatusCode.ERROR, e.getMessage());
             span.recordException(e);
+            // ERROR: işlem sırasında beklenmedik hata
+            log.atError()
+                    .addKeyValue("alarm.id", request.getAlarmId())
+                    .addKeyValue("alarm.type", request.getAlarmType().name())
+                    .setCause(e)
+                    .log("Alarm processing failed unexpectedly");
             throw e;
         } finally {
             span.end();

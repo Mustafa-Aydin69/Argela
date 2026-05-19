@@ -12,6 +12,8 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +23,10 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class AlarmService {
 
+    private static final Logger log = LoggerFactory.getLogger(AlarmService.class);
+
     private static final String IP_PATTERN = "^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$";
+    private static final long WARN_AGE_MINUTES = 30;
     private static final long MAX_AGE_MINUTES = 60;
 
     private final ProcessorClient processorClient;
@@ -54,12 +59,25 @@ public class AlarmService {
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
 
+            // INFO: alarm doğrulama başarılı, processor'a iletiliyor
+            log.atInfo()
+                    .addKeyValue("alarm.id", request.getAlarmId())
+                    .addKeyValue("alarm.type", request.getAlarmType().name())
+                    .addKeyValue("alarm.source_ip", request.getSourceIp())
+                    .log("Alarm validated and forwarded to processor");
+
             return processorClient.forwardAlarm(request)
                     .doFinally(signal -> span.end());
         } catch (IllegalArgumentException e) {
             span.setStatus(StatusCode.ERROR, e.getMessage());
             span.recordException(e);
             span.end();
+            // ERROR: doğrulama başarısız
+            log.atError()
+                    .addKeyValue("alarm.id", request.getAlarmId())
+                    .addKeyValue("alarm.source_ip", request.getSourceIp())
+                    .setCause(e)
+                    .log("Alarm validation failed");
             return Mono.error(e);
         }
     }
@@ -72,6 +90,15 @@ public class AlarmService {
         long ageMinutes = ChronoUnit.MINUTES.between(request.getTimestamp(), LocalDateTime.now());
         if (ageMinutes > MAX_AGE_MINUTES) {
             throw new IllegalArgumentException("Alarm timestamp is too old: " + ageMinutes + " minutes");
+        }
+
+        // WARN: alarm yaşı eşiği aştı ama henüz geçersiz değil
+        if (ageMinutes > WARN_AGE_MINUTES) {
+            log.atWarn()
+                    .addKeyValue("alarm.id", request.getAlarmId())
+                    .addKeyValue("alarm.age_minutes", ageMinutes)
+                    .addKeyValue("warn_threshold_minutes", WARN_AGE_MINUTES)
+                    .log("Alarm is aging — approaching expiry threshold");
         }
 
         span.setAttribute("alarm.age_minutes", ageMinutes);
