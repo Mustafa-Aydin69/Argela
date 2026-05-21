@@ -54,10 +54,10 @@ desktop.ini
 # OTel Agent
 opentelemetry-javaagent.jar
 
-# Claude Code
+
 .claude/
 CLAUDE.md
-
+opentelemetry-sunum-10dk-konusmaci-notlari.docx
 # SQL
 *.sql
 !fault-processor/src/main/resources/db/migration/*.sql
