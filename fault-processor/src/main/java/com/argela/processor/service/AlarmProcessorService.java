@@ -79,8 +79,10 @@ public class AlarmProcessorService {
             alarm.setCreatedAt(LocalDateTime.now());
 
             alarm.setStatus(AlarmStatus.PROCESSING);
+            Alarm saved = repository.save(alarm); // gauge'ın PROCESSING'i görebilmesi için önce kaydet
+
             SeverityLevel severity = severityService.resolve(request); // severity.calculate buradan child span açar
-            alarm.setSeverityLevel(severity);
+            saved.setSeverityLevel(severity);
             span.setAttribute("alarm.severity", severity.name());
 
             // WARN: kritik alarm, operasyon ekibi bilgilendirilmeli
@@ -93,10 +95,10 @@ public class AlarmProcessorService {
                         .log("CRITICAL severity alarm detected — immediate attention required");
             }
 
-            alarm.setStatus(AlarmStatus.PROCESSED);
-            alarm.setProcessedAt(LocalDateTime.now());
+            saved.setStatus(AlarmStatus.PROCESSED);
+            saved.setProcessedAt(LocalDateTime.now());
 
-            Alarm saved = repository.save(alarm); // DB span'ları da alarm.process'in child'ı olur
+            saved = repository.save(saved); // DB span'ları da alarm.process'in child'ı olur
             double elapsedMs = (System.nanoTime() - startNano) / 1_000_000.0;
             processedCounter.add(1, Attributes.of(
                     AttributeKey.stringKey("severity.level"), severity.name()

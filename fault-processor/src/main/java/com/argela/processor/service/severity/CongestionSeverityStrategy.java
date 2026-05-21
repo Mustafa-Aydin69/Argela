@@ -13,11 +13,13 @@ public class CongestionSeverityStrategy implements SeverityStrategy {
         return AlarmType.CONGESTION;
     }
 
+    private static final int HIGH_THRESHOLD_PERCENT = 80;
+
     @Override
     public SeverityLevel calculate(AlarmRequest request) {
-        String desc = request.getDescription() == null ? "" : request.getDescription().toLowerCase();
-        if (desc.contains("peak")) {
-            return SeverityLevel.HIGH;
+        if (request.getMetrics() != null && request.getMetrics().getBandwidthUtilizationPercent() != null) {
+            return request.getMetrics().getBandwidthUtilizationPercent() > HIGH_THRESHOLD_PERCENT
+                    ? SeverityLevel.HIGH : SeverityLevel.MEDIUM;
         }
         return SeverityLevel.MEDIUM;
     }

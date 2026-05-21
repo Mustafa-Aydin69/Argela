@@ -22,7 +22,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "rate(alarms_received_total[5m])",
+          "expr": "sum by(alarm_type) (rate(alarms_received_total[5m]))",
           "legendFormat": "{{alarm_type}}",
           "refId": "A"
         }
@@ -43,7 +43,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "alarms_processed_total",
+          "expr": "sum by(severity_level) (alarms_processed_total)",
           "legendFormat": "{{severity_level}}",
           "refId": "A"
         }
@@ -100,7 +100,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "rate(alarm_processing_duration_milliseconds_sum[5m]) / rate(alarm_processing_duration_milliseconds_count[5m])",
+          "expr": "sum by(alarm_type) (rate(alarm_processing_duration_milliseconds_sum[5m])) / sum by(alarm_type) (rate(alarm_processing_duration_milliseconds_count[5m]))",
           "legendFormat": "{{alarm_type}}",
           "refId": "A"
         }
@@ -134,7 +134,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "alarms_pending_count",
+          "expr": "sum(alarms_pending_count)",
           "legendFormat": "Aktif Alarm",
           "refId": "A"
         }

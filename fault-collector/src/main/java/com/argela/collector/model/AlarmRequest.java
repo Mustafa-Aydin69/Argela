@@ -21,6 +21,8 @@ public class AlarmRequest {
     @NotNull
     private LocalDateTime timestamp;
 
+    private AlarmMetrics metrics;
+
     public AlarmRequest() {}
 
     public AlarmRequest(String alarmId, String sourceIp, AlarmType alarmType,
@@ -46,4 +48,7 @@ public class AlarmRequest {
 
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public AlarmMetrics getMetrics() { return metrics; }
+    public void setMetrics(AlarmMetrics metrics) { this.metrics = metrics; }
 }

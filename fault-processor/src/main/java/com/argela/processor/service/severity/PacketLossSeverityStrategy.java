@@ -13,16 +13,14 @@ public class PacketLossSeverityStrategy implements SeverityStrategy {
         return AlarmType.PACKET_LOSS;
     }
 
+    private static final int HIGH_THRESHOLD_PERCENT = 20;
+
     @Override
     public SeverityLevel calculate(AlarmRequest request) {
-        String desc = description(request);
-        if (desc.contains("high") || desc.contains("severe")) {
-            return SeverityLevel.HIGH;
+        if (request.getMetrics() != null && request.getMetrics().getPacketLossPercent() != null) {
+            return request.getMetrics().getPacketLossPercent() > HIGH_THRESHOLD_PERCENT
+                    ? SeverityLevel.HIGH : SeverityLevel.MEDIUM;
         }
         return SeverityLevel.MEDIUM;
-    }
-
-    private String description(AlarmRequest request) {
-        return request.getDescription() == null ? "" : request.getDescription().toLowerCase();
     }
 }
