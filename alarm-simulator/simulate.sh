@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Fault Management Alarm Simulator
 
 COLLECTOR_URL="${COLLECTOR_URL:-http://localhost:8080/api/v1/alarms}"
@@ -13,6 +12,29 @@ random_alarm_type() {
   echo "${ALARM_TYPES[$((RANDOM % ${#ALARM_TYPES[@]}))]}"
 }
 
+generate_description() {
+  local type="$1"
+  local ip="$2"
+  case "$type" in
+    HIGH_LATENCY)
+      local ms_values=(120 250 380 620 780 950)
+      local ms="${ms_values[$((RANDOM % ${#ms_values[@]}))]}"
+      echo "HIGH_LATENCY detected from $ip latency=${ms}ms"
+      ;;
+    PACKET_LOSS)
+      local variants=("packet loss detected" "high packet loss observed" "severe packet loss on link" "minor packet loss detected")
+      echo "${variants[$((RANDOM % ${#variants[@]}))]}"
+      ;;
+    CONGESTION)
+      local variants=("congestion detected on interface" "peak congestion reached bandwidth limit" "moderate congestion observed" "peak traffic congestion critical")
+      echo "${variants[$((RANDOM % ${#variants[@]}))]}"
+      ;;
+    *)
+      echo "Simulated $type from $ip"
+      ;;
+  esac
+}
+
 send_alarm() {
   local id="alarm-$(date +%s%N)"
   local ip
@@ -21,11 +43,13 @@ send_alarm() {
   type=$(random_alarm_type)
   local ts
   ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local desc
+  desc=$(generate_description "$type" "$ip")
 
   curl -s -o /dev/null -w "%{http_code}" \
     -X POST "$COLLECTOR_URL" \
     -H "Content-Type: application/json" \
-    -d "{\"alarmId\":\"$id\",\"sourceIp\":\"$ip\",\"alarmType\":\"$type\",\"description\":\"Simulated $type from $ip\",\"timestamp\":\"$ts\"}"
+    -d "{\"alarmId\":\"$id\",\"sourceIp\":\"$ip\",\"alarmType\":\"$type\",\"description\":\"$desc\",\"timestamp\":\"$ts\"}"
 }
 
 run_slow() {
