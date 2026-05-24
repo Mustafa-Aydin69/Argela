@@ -1,3 +1,11 @@
+/*fault-collector'ın iş mantığı servisi. Otel açısından bu dosyada üç şey var:
+1. Manuel Span (alarm.validate) - custom span açma, attribute ekleme, event ekleme, status ayarlama, hata yönetimi
+2. Costum Metric (alarms.received.total) - alarm tipine göre sayaç
+3. Context propagation - span.makeCurrent() ile span'ın aktif tutulması
+
+Ne işe yarıyor dersek Agent'ın otomatik POST api/v1/alarms span'ının altına bizim yazdığımız alarm.validate child span'ını koyuyoruz.
+Bu sayede Jaeger'da "bu HTTP isteği içinde tam olarak ne oldu" sorusunun cevabını görebiliyoruz.   
+*/
 package com.argela.collector.service;
 
 import com.argela.collector.client.ProcessorClient;

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Bu dosyada projenin kimliği, fault-collector ve fault-processor alt modüllerinin tanımı-->
+<!-- java, spring boot ve logstach-logback-encoder versiyon bilgileri yer almaktadır. -->
+<!-- alt modüllerin kullanacağı bağımlılıkların versiyonları burada tanımlanmaktadır. -->
+<!-- Spring Boot maven plugin ve compiler plugin tanımları da burada yapılmaktadır.  -->
+<!-- Bu dosya versiyon tutarlılığını ve bağımlılık yönetimi sağlar. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">

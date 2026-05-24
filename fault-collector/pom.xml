@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--  fault collector modülüne  ait maven bağımlılık dosyası. Otel açısından kritik iki şey var burada
+opentelemetry-api bağımlılığı ve jvmArguments bloğu-->
+<!-- Ne işe yarıyor dersen İki farklı Otel katmanını burada birbirine bağlıyoruz. Auto instrumentation ve Manuel instrumentation.-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">

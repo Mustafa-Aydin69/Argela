@@ -1,3 +1,6 @@
+# Bu Dockerfile, fault-processor uygulamasını derleyip çalıştırmak için kullanılır. 
+#İki aşamalı bir yapı kullanır: ilk aşamada Maven ile uygulama derlenir, ikinci aşamada ise sadece çalıştırmak için gerekli dosyalar alınarak daha küçük bir imaj oluşturulur.
+# kısaca fault-collector Dockerfile dosyasıyla benzer ancak bu sefer sadece fault-processor için gerekli dosyalar kopyalanır ve çalıştırılır.
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 # Cache Maven dependencies as a separate layer

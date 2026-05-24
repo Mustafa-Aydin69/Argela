@@ -1,3 +1,14 @@
+/*
+fault-processor'ın iş mantığı servisi. AlarmService.java'dan daha zengin Otel içeriği var:
+1. Manuel Span (alarm.process) - parent custom span, tüm işleme sürecini kapsar
+2. 3 farklı custom metric - counter, histogram, gauge
+3. Nested Span yapısı - severity.calculate child span bu parent altında açılıyor. Bu sayede, alarm.process span'ı altında tüm alt işlemlerin detaylarını görebiliriz.
+4. Span eventleri - alarm.persisted, alarm.critical_severity, recordException gibi önemli olayları span eventleri olarak ekleyerek, trace içinde bu olayların zamanlamasını ve bağlamını görebiliriz.
+5. Yapılandırılmış log örneği - logAlarmRecord() metodu, alarm kaydıyla ilgili tüm önemli bilgileri yapılandırılmış log formatında kaydeder.
+
+Ne işe yarar= fault-collector'dan gelen trace'i devralıp fault-processor tarafındaki tüm operasyonları tek bir parent span altında topluyor. 
+Jaeger'da collector'dan başlayıp DB'ye kadar uzanan tam zinciri bu sayede görüyoruz.
+*/
 package com.argela.processor.service;
 
 import com.argela.processor.entity.Alarm;

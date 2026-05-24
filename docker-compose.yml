@@ -1,3 +1,10 @@
+# Tüm sistemi ayağa kaldıran dosya. İçerisinde şuan 7 adet servis var. "docker-compose up --build" komutu ile tüm sistemi ayağa kaldırabiliyoruz.
+# postgres(alarm kayıtlarını tutuyorum veritabanı), jaeger( trace kayıtlarını görselleştirdiğimiz arayüz), prometheus(metrikleri topladığımız yer)
+# grafana (metrikleri görselleştirilen arayüz), otel-collector (OpenTelemetry Collector, tüm telemetri verisinin toplandığı, işlendiği ve yönlendirildiği merkezi havuz),
+# fault-collector (alarm verilerini toplayan servis, modül), fault-processor(alarm verilerini işleyen, analiz eden ve sonuçları döndüren servis, modül)
+# Bu dosya olmadan hiçbir servis birbirini bulamaz. Otel entegrasyonu açısınından kritik olan iki şeyi burada tanımlamamız lazım:
+# Uygulama servislerine  Otel env var'larını burada veriyoruz ki otel-agent nereye veri göndereceğini bu değişkenlerden öğreniyor. 
+# Otel Collector ve Jaeger'i ayağa burada kaldırıyoruz ki uygulama servisleri otel-collector'ı bulabilsin ve otel-collector da jaeger'i bulabilsin.
 services:
 
   # ─── Infrastructure ───────────────────────────────────────────────────────
