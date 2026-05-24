@@ -1,4 +1,4 @@
-﻿# Maven
+﻿
 target/
 *.class
 *.jar
@@ -16,48 +16,28 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
-
-# IDE - IntelliJ IDEA
 .idea/
 *.iws
 *.iml
 *.ipr
 out/
-
-# IDE - Eclipse
 .eclipse/
 .classpath
 .project
 .settings/
 bin/
-
-# IDE - VS Code
 .vscode/
-
-# Spring Boot
 spring-shell.log
 logs/
-
-# OS
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# Docker
 .docker/
-
-# Environment
 .env
 .env.local
 *.env
-
-# OTel Agent
 opentelemetry-javaagent.jar
-
-
 .claude/
-CLAUDE.md
 opentelemetry-sunum-10dk-konusmaci-notlari.docx
-# SQL
 *.sql
 !fault-processor/src/main/resources/db/migration/*.sql

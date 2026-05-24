@@ -87,6 +87,11 @@ public class AlarmProcessorService {
 
             // WARN: kritik alarm, operasyon ekibi bilgilendirilmeli
             if (severity == SeverityLevel.CRITICAL) {
+                span.addEvent("alarm.critical_severity", Attributes.of(
+                        AttributeKey.stringKey("alarm.type"), request.getAlarmType().name(),
+                        AttributeKey.stringKey("alarm.source_ip"), request.getSourceIp(),
+                        AttributeKey.stringKey("severity"), severity.name()
+                ));
                 log.atWarn()
                         .addKeyValue("alarm.id", request.getAlarmId())
                         .addKeyValue("alarm.type", request.getAlarmType().name())
@@ -107,6 +112,11 @@ public class AlarmProcessorService {
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
 
+            span.addEvent("alarm.persisted", Attributes.of(
+                    AttributeKey.longKey("alarm.db_id"), saved.getId(),
+                    AttributeKey.stringKey("alarm.severity"), severity.name(),
+                    AttributeKey.doubleKey("alarm.duration_ms"), elapsedMs
+            ));
             logAlarmRecord(saved, elapsedMs);
 
             return new ProcessResponse(saved.getAlarmId(), saved.getStatus(), saved.getSeverityLevel());

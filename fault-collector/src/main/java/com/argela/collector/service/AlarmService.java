@@ -59,6 +59,11 @@ public class AlarmService {
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
 
+            span.addEvent("alarm.validated", Attributes.of(
+                    AttributeKey.stringKey("alarm.id"), request.getAlarmId(),
+                    AttributeKey.stringKey("alarm.type"), request.getAlarmType().name(),
+                    AttributeKey.stringKey("alarm.source_ip"), request.getSourceIp()
+            ));
             // INFO: alarm doğrulama başarılı, processor'a iletiliyor
             log.atInfo()
                     .addKeyValue("alarm.id", request.getAlarmId())
@@ -94,6 +99,10 @@ public class AlarmService {
 
         // WARN: alarm yaşı eşiği aştı ama henüz geçersiz değil
         if (ageMinutes > WARN_AGE_MINUTES) {
+            span.addEvent("alarm.aging", Attributes.of(
+                    AttributeKey.longKey("alarm.age_minutes"), ageMinutes,
+                    AttributeKey.longKey("warn_threshold_minutes"), WARN_AGE_MINUTES
+            ));
             log.atWarn()
                     .addKeyValue("alarm.id", request.getAlarmId())
                     .addKeyValue("alarm.age_minutes", ageMinutes)
