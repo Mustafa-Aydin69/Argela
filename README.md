@@ -10,35 +10,41 @@ Ağ yönetim sistemlerinde oluşan alarmlar **fault-collector** servisi tarafın
 ## Mimari
 
 ```
-[Alarm Simülatörü]
-        │  HTTP POST /api/v1/alarms
-        ▼
-┌──────────────────────┐     REST API      ┌───────────────────────────┐
-│  fault-collector     │ ────────────────▶ │  fault-processor          │
-│  :8080               │                   │  :8081                    │
-│  (alarm toplar,      │                   │  (severity atar,          │
-│   doğrular)          │                   │   DB'ye yazar, log üretir)│
-└──────────────────────┘                   └──────────────┬────────────┘
-         │  OTLP                             OTLP │        │
-         └───────────────────────────────────────┘        │
-                             │                             ▼
-                    ┌────────▼────────┐             ┌────────────┐
-                    │  OTel Collector  │             │ PostgreSQL │
-                    │  :4317 (gRPC)   │             │ :5432      │
-                    │  :4318 (HTTP)   │             └────────────┘
-                    └──┬──────────┬───┘
-                       │          │
-                  Traces        Metrics
-                       │          │
-                  ┌────▼──┐  ┌───▼──────┐
-                  │ Jaeger │  │Prometheus│
-                  │ :16686 │  │ :9090    │
-                  └────────┘  └────┬─────┘
-                                   ▼
-                               ┌────────┐
-                               │Grafana │
-                               │ :3000  │
-                               └────────┘
+         [Alarm Simülatörü]
+                  │
+                  │  HTTP POST /api/v1/alarms
+                  ▼
+┌───────────────────────┐     REST API     ┌───────────────────────────┐
+│    fault-collector    │ ───────────────▶ │     fault-processor       │
+│        :8080          │                  │         :8081             │
+│  (alarm toplar,       │                  │  (severity atar,          │
+│   doğrular)           │                  │   DB'ye yazar)            │
+└──────────┬────────────┘                  └───────────┬───────────────┘
+           │ OTLP                             OTLP │   │ SQL
+           │                                       │   ▼
+           │                                       │  ┌────────────┐
+           └───────────────────┬───────────────────┘  │ PostgreSQL │
+                               │                       │   :5432    │
+                               ▼                       └────────────┘
+                  ┌────────────────────────┐
+                  │     OTel Collector     │
+                  │     :4317 (gRPC)       │
+                  │     :4318 (HTTP)       │
+                  └────────────┬───────────┘
+                               │
+               ┌───────────────┴────────────────┐
+               │ Traces                         │ Metrics
+               ▼                                ▼
+        ┌────────────┐                  ┌────────────┐
+        │   Jaeger   │                  │ Prometheus │
+        │   :16686   │                  │   :9090    │
+        └────────────┘                  └──────┬─────┘
+                                               │
+                                               ▼
+                                        ┌────────────┐
+                                        │   Grafana  │
+                                        │   :3000    │
+                                        └────────────┘
 ```
 
 ## Teknoloji Stack

@@ -74,12 +74,20 @@ run_fast() {
 }
 
 run_error() {
-  echo "► Hata senaryosu: geçersiz payload gönderiliyor (10 istek)"
+  echo "► Hata senaryosu: geçersiz IP ile alarm gönderiliyor (10 istek)"
   for i in $(seq 1 10); do
+    local id="alarm-err-$(date +%s%3N)-$i"
+    local type
+    type=$(random_alarm_type)
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%S")
+    local metrics
+    metrics=$(generate_metrics "$type")
+
     status=$(curl -s -o /dev/null -w "%{http_code}" \
       -X POST "$COLLECTOR_URL" \
       -H "Content-Type: application/json" \
-      -d "{\"alarmId\":\"\",\"sourceIp\":\"invalid-ip\",\"alarmType\":\"UNKNOWN\"}")
+      -d "{\"alarmId\":\"$id\",\"sourceIp\":\"999.999.999.999\",\"alarmType\":\"$type\",\"description\":\"Error test - invalid IP\",\"timestamp\":\"$ts\",\"metrics\":$metrics}")
     echo "[$(date +%H:%M:%S)] Hatalı alarm $i → HTTP $status"
     sleep 0.5
   done

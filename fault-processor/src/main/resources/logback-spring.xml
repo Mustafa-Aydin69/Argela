@@ -1,5 +1,3 @@
-# Spring Boot normalde Logback kullanıyor ve logları plain-text olarak yazıyor. Biz bunu değiştirip JSON formatına geçiriyoruz. Neden? Çünkü JSON loglar makine tarafından okunabilir.
-# Logları JSON formatında yazmak, log yönetimi ve analiz araçlarıyla entegrasyonu kolaylaştırır. Örneğin, ELK stack (Elasticsearch, Logstash, Kibana) gibi araçlar JSON logları daha etkili bir şekilde işleyebilir ve görselleştirebilir.
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 

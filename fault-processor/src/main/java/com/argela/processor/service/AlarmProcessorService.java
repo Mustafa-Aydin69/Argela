@@ -96,7 +96,7 @@ public class AlarmProcessorService {
             saved.setSeverityLevel(severity);
             span.setAttribute("alarm.severity", severity.name());
 
-            // WARN: kritik alarm, operasyon ekibi bilgilendirilmeli
+            // UYARI kısmı: kritik alarm 
             if (severity == SeverityLevel.CRITICAL) {
                 span.addEvent("alarm.critical_severity", Attributes.of(
                         AttributeKey.stringKey("alarm.type"), request.getAlarmType().name(),
