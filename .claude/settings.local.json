@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\" 2>&1)",
+      "WebFetch(domain:www.argela.com.tr)",
+      "Bash(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\otel-collector\\\\.gitkeep\" -Force)",
+      "Bash(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\prometheus\\\\.gitkeep\" -Force)",
+      "Bash(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\grafana\\\\dashboards\\\\.gitkeep\" -Force)",
+      "Bash(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\simulator\\\\.gitkeep\" -Force)",
+      "PowerShell(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\otel-collector\\\\.gitkeep\" -Force)",
+      "PowerShell(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\prometheus\\\\.gitkeep\" -Force)",
+      "PowerShell(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\grafana\\\\dashboards\\\\.gitkeep\" -Force)",
+      "PowerShell(New-Item -ItemType File \"C:\\\\Users\\\\MSI-KATANA\\\\Desktop\\\\ARGELA\\\\infrastructure\\\\simulator\\\\.gitkeep\" -Force)"
+    ]
+  }
+}

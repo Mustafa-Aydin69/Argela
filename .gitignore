@@ -37,7 +37,6 @@ desktop.ini
 .env.local
 *.env
 opentelemetry-javaagent.jar
-.claude/
 opentelemetry-sunum-10dk-konusmaci-notlari.docx
 *.sql
 !fault-processor/src/main/resources/db/migration/*.sql
