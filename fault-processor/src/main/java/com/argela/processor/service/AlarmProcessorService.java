@@ -49,6 +49,7 @@ public class AlarmProcessorService {
     private final DoubleHistogram processingDurationHistogram;
 
     public AlarmProcessorService(AlarmRepository repository, SeverityService severityService) {
+        //1 
         this.repository = repository;
         this.severityService = severityService;
         this.tracer = GlobalOpenTelemetry.getTracer("fault-processor");
@@ -72,11 +73,13 @@ public class AlarmProcessorService {
 
     @Transactional
     public ProcessResponse process(AlarmRequest request) {
+        //spanBuilder
         Span span = tracer.spanBuilder("alarm.process")
                 .setSpanKind(SpanKind.INTERNAL)
                 .startSpan();
 
         long startNano = System.nanoTime();
+        // Context'e bağlama
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("alarm.id", request.getAlarmId());
             span.setAttribute("alarm.type", request.getAlarmType().name());
@@ -91,12 +94,12 @@ public class AlarmProcessorService {
 
             alarm.setStatus(AlarmStatus.PROCESSING);
             Alarm saved = repository.save(alarm); // gauge'ın PROCESSING'i görebilmesi için önce kaydet
-
+                // child span
             SeverityLevel severity = severityService.resolve(request); // severity.calculate buradan child span açar
             saved.setSeverityLevel(severity);
             span.setAttribute("alarm.severity", severity.name());
 
-            // UYARI kısmı: kritik alarm 
+            // uyarı kısmı: KRİTİK alarm 
             if (severity == SeverityLevel.CRITICAL) {
                 span.addEvent("alarm.critical_severity", Attributes.of(
                         AttributeKey.stringKey("alarm.type"), request.getAlarmType().name(),
@@ -122,7 +125,7 @@ public class AlarmProcessorService {
             processingDurationHistogram.record(elapsedMs, Attributes.of(
                     AttributeKey.stringKey("alarm.type"), request.getAlarmType().name()
             ));
-
+            // başarıyla DB'ye kaydedildiğinde, span event olarak ekleniyor.
             span.addEvent("alarm.persisted", Attributes.of(
                     AttributeKey.longKey("alarm.db_id"), saved.getId(),
                     AttributeKey.stringKey("alarm.severity"), severity.name(),

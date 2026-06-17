@@ -79,7 +79,7 @@ services:
     depends_on:
       - jaeger
 
-  # ─── Application Services ─────────────────────────────────────────────────
+  # ─── Application Services ───
 
   fault-processor:
     build:
